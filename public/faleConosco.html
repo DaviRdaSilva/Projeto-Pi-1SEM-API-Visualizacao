@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fale Conosco</title>
+    <link rel="stylesheet" href="./css/style_faleconosco.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="shortcut icon" href="./assets/img/favicon.ico" type="image/x-icon">
+</head>
+
+<body>
+
+    <!-- Inicio da nav bar -->
+    <div class="header">
+        <div class="header-group">
+            <div class="container">
+
+                <a href="index.html"><img src="./assets/img/logo (3).png" alt="Logo" class="logo"></a>
+                <ul class="nav-bar">
+                    <li><a href="./index.html">Home</a></li>
+                    <li><a href="./sobreNos.html">Sobre Nós</a></li>
+                    <li><a href="./simulador.html">Calculadora Financeira</a></li>
+                    <li><a href="./loginEmpresa.html">Administrador</a></li>
+                    <li><a href="./helpdesk.html">Suporte</a></li>
+                </ul>
+                <img src="./assets/img/login_icon_151220.png" alt="login" class="login_icon">
+                <span class="login"><a href="./login.html">Login</a></span>
+                <span class="login"><a href="./cadastro.html">Cadastro</a></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Iniciando conteudo -->
+    <div class="principal">
+        <div class="content">
+
+            <!-- Iniciando formulário -->
+            <div class="inicial">
+                <div class="titulo">
+                    <span class="part1">Fale </span> <span class="part2">Conosco</span>
+                </div> <br>
+                <div class="subtitulo">
+                    Para dúvidas, sugestões, reclamações ou orçamento, entre em contato conosco abaixo:
+                </div>
+            </div>
+            <form action="">
+                <div class="dados">
+                    <p><input id="ipt_nome" type="text" placeholder="Nome"></p>
+                    <p><input id="ipt_email" type="email" placeholder="E-mail"></p>
+                    <p><input id="ipt_telcel" type="number" placeholder="Numero do telefone"></p>
+                    <p><input id="ipt_mensagem" type="text" placeholder="Mensagem"></p>
+                    <button onclick="enviar()" class="enviar">ENVIAR</button>
+                </div>
+            </form>        
+            <div class="contato">
+                <div class="telefone">
+                    <span class="icon"><img class="icon" src="./assets/img/chamada-telefonica.png"
+                            alt=""></span>
+                    <div class="conteudo">
+                        <div class="title">TELEFONE</div>
+                        <div>(00)12345-6789</div>
+                    </div>
+                </div>
+                <div class="email">
+                    <span class="icon"><img class="icon" src="./assets/img/cartas.png" alt=""></span>
+                    <div class="conteudo">
+                        <div class="title">E-MAIL</div>
+                        <div>secure_ship@hotmail.com</div>
+                    </div>
+                </div>
+                <div class="endereço">
+                    <span class="icon"><img class="icon" src="./assets/img/predio-comercial.png" alt=""></span>
+                    <div class="conteudo">
+                        <DIV class="title">ENDEREÇO</DIV>
+                        <div>Rua Haddock Lobo, 595 - SP</div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+        <!-- Iniciando img mapa -->
+        <div class="mapa">
+            <div class="imagem"></div>
+        </div>
+    </div>
+
+    <!-- Iniciando footer -->
+    <div class="footer">
+        <div class="footer-content">
+            <div class="footer-left">
+                <a href="./index.html"><img src="./assets/img/logo (3).png" alt="logo" width="180px" height="160px"></a>
+                <div class="icons-footer">
+                    <a href=""><i class="fa fa-twitter-square"></i></a>
+                    <a href=""><i class="fa fa-facebook-square"></i></a>
+                    <a href=""><i class="fa fa-instagram"></i></a>
+                    <a href=""><i class="fa fa-linkedin"></i></a>
+                </div>
+            </div>
+            <div class="footer-right">
+                <div class="footer-right-content">
+                    <div class="compania">
+                        <h1>Compania</h1>
+                        <a href="sobreNos.html">Sobre Nós</a>
+                        <a href="faleConosco.html">Fale Conosco</a>
+                    </div>
+                    <div class="usuario">
+                        <h1>Usuário</h1>
+                        <a href="login.html">Login</a>
+                        <a href="cadastro.html">Cadastro</a>
+                    </div>
+                    <div class="calculadora">
+                        <h1>Calculadora Financeira</h1>
+                        <a href="simulador.html">Calculadora</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>
+
+<script>
+    function enviar() {
+        var email = "secure_ship@hotmail.com";
+        var assunto = `Olá, meu nome é ` + ipt_nome.value;
+        var corpo = ipt_mensagem.value;
+        window.open("mailto:" + email + "?subject=" + assunto + "&body=" + corpo);
+}
+</script>

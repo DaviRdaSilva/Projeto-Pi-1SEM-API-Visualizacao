@@ -1,0 +1,241 @@
+<!doctype html>
+
+<head>
+    <title>Permissões | Dashboard</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="shortcut icon" href="imgs/favicon.ico" type="image/x-icon">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+    <script src="http://www.chartjs.org/dist/2.7.1/Chart.js"></script>
+    <!-- <script src="http://www.chartjs.org/samples/latest/utils.js"></script> -->
+    <script src="../js/funcoes.js"></script>
+</head>
+
+<body onload="atualizarFeed_usuarios(), atualizarFeed_locais()">
+    <div class="geral">
+        <div class="side-bar">
+            <div class="container">
+                <span class="container-logo">
+                    <img src="imgs/logo (3).png" alt="Logo" class="logo" />
+                </span>
+                <span class="container-opçoes">
+                
+                    <ul class="opções_visualização">
+                    
+                        <li class="lista">
+                            <a href="index.html">
+                                <img class="icons" src="imgs/icons8-casa-16.png" alt="">
+                            
+                        </a>
+                        </li>
+                            
+                        <li class="lista">
+                            <a href="containers.html">
+                                <img class="icons" src="imgs/icons8-cardápio-16.png" alt="">
+                                
+                            </a>
+                        </li>
+                        
+                        <li class="lista">
+                            <a href="suporte.html">
+                                <img class="icons" src="imgs/icons8-configurações-16.png" alt="">
+                                
+                            </a>
+                        </li>
+                        
+                        <li class="lista">
+                            <a href="permissoes.html">
+                                <img class="icons" src="imgs/icons8-desbloquear-16.png" alt="">
+                                
+                            </a>
+                        </li>
+                    
+                    </ul>
+                
+                </span>
+            </div>
+        </div>
+        <div class="dashbords">
+            <div class="header">
+
+                <div class="select">
+                    Dashboards/<b>Permissões</b>
+                </div>
+
+                <div class="icon">
+
+                    <img id="icone_sino" src="imgs/icons8-lembrete-de-compromissos-32.png" alt="Icone de Sinalização">
+                    <img src="imgs/icons8-usuário-32 (1).png" alt=""> <p id="admin">Admin</p> 
+                                                
+                </div>
+
+            </div>
+            <div class="container">
+                <div class="msg_inicio">
+                    <h1 class="h1-container">Bem vindo de volta,<span id="b_usuario">usuario</span>!</h1>
+                    <p id="p-container">Resumo dos Funcionarios</p>
+                </div>
+
+                <div class="users-pesquisa">
+                    <!-- <label for="input_pesquisa">Pesquisar por email:</label> -->
+                    <input type="text" id="input_pesquisa" class="input_pesquisa" placeholder="Pesquisar por Email">
+                    <!-- <button onclick="buscar_usuario()">Pesquisar</button> -->
+                    <button class="btn-per" onclick="ir_cadastrar()">Adicionar Usuário</button>
+                    <button class="btn-per" onclick="ir_deletar()">Remover Usuário</button>
+                </div>
+                <p class="h1-perm">Users</p>
+                <div class="lista-users" id="lista_users">
+                    <ul id="lista_usuarios">
+                    </ul>
+                </div>
+                
+                <p class="h1-perm">Locais</p>
+                <div class="lista-users">
+                    <ul id="lista_locais">
+                    </ul>
+                </div>
+
+            </div>
+            <div id="div_erros_login">
+                <div class="alerta_erro">
+                  <div class="card_erro" id="cardErro">
+                      <span id="mensagem_erro"></span>
+                  </div>
+                </div>
+              </div>
+              <div id="div_aguardar" class="loading-div">
+              </div>
+        </div>
+    </div>
+</body>
+
+</html>
+
+<script>
+
+b_usuario.innerHTML = sessionStorage.NOME_USUARIO;
+
+// var IDEmpresa = sessionStorage.IDEmpresa;
+
+    function ir_cadastrar() {
+        window.location = "cadastro.html";
+    }
+
+    function ir_deletar() {
+            window.location = "deletar.html";
+    }
+
+    function atualizarFeed_locais() {
+        aguardar();
+
+        var IDEmpresaVar = sessionStorage.FKEmpresa;
+
+        fetch("/usuarios/listar_locais", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                // crie um atributo que recebe o valor recuperado aqui
+                // Agora vá para o arquivo routes/usuario.js
+                idEmpServer: IDEmpresaVar,
+            })
+        }).then(function (resposta) {
+
+            console.log("resposta: ", resposta);
+
+            if (resposta.ok) {
+
+                if (resposta.status == 204) {
+                        var feed = document.getElementById("lista_locais");
+                        var mensagem = document.createElement("span");
+                        mensagem.innerHTML = "Nenhum resultado encontrado."
+                        feed.appendChild(mensagem);
+                        throw "Nenhum resultado encontrado!!";
+                    }
+
+                    resposta.json().then(function (resposta) {
+                    console.log("Dados recebidos: ", JSON.stringify(resposta));
+
+                    var feed = document.getElementById("lista_locais");
+                    feed.innerHTML = "";
+                    for (let contador_usuario = 0; contador_usuario < resposta.length; contador_usuario++) {
+                        var publicacao = resposta[contador_usuario];
+                        // criando e manipulando elementos do HTML via JavaScript
+                        var usuario = document.createElement("li");
+
+                        usuario.innerHTML = publicacao.Nome;
+
+                        feed.appendChild(usuario);
+                    }
+
+                    finalizarAguardar();
+                });
+            } else {
+                throw ("Houve um erro ao tentar realizar A pesquisa!");
+            }
+        }).catch(function (resposta) {
+            console.log(`#ERRO: ${resposta}`);
+            finalizarAguardar();
+        });
+
+        return false;
+    }
+
+    function atualizarFeed_usuarios() {
+        aguardar();
+
+        var IDEmpresaVar = sessionStorage.FKEmpresa;
+
+        fetch("/usuarios/listar_usuarios", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                // crie um atributo que recebe o valor recuperado aqui
+                // Agora vá para o arquivo routes/usuario.js
+                idEmpServer: IDEmpresaVar,
+            })
+        }).then(function (resposta) {
+
+            console.log("resposta: ", resposta);
+
+            if (resposta.ok) {
+
+                if (resposta.status == 204) {
+                        var feed = document.getElementById("lista_usuarios");
+                        var mensagem = document.createElement("span");
+                        mensagem.innerHTML = "Nenhum resultado encontrado."
+                        feed.appendChild(mensagem);
+                        throw "Nenhum resultado encontrado!!";
+                    }
+
+                    resposta.json().then(function (resposta) {
+                    console.log("Dados recebidos: ", JSON.stringify(resposta));
+
+                    var feed = document.getElementById("lista_usuarios");
+                    feed.innerHTML = "";
+                    for (let contador_usuario = 0; contador_usuario < resposta.length; contador_usuario++) {
+                        var publicacao = resposta[contador_usuario];
+                        // criando e manipulando elementos do HTML via JavaScript
+                        var usuario = document.createElement("li");
+
+                        usuario.innerHTML = publicacao.Nome + " | " + publicacao.Email + " | " + publicacao.Cpf;
+
+                        feed.appendChild(usuario);
+                    }
+
+                    finalizarAguardar();
+                });
+            } else {
+                throw ("Houve um erro ao tentar realizar A pesquisa!");
+            }
+        }).catch(function (resposta) {
+            console.log(`#ERRO: ${resposta}`);
+            finalizarAguardar();
+        });
+
+        return false;
+    }
+
+</script>

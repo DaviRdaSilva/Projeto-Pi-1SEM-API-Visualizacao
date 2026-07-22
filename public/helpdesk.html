@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="./assets/img/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="./css/style_helpdesk.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="../public/js/funcoes.js"></script>
+    <title> HelpDesk - SecureShip </title>
+
+</head>
+
+<body>
+    <!--Inicio Header-->
+    <div class="header">
+        <div class="header-group">
+            <div class="container">
+                <a href="./index.html"><img src="./assets/img/logo (3).png" alt="Logo" class="logo"></a>
+                <ul class="nav-bar">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="sobreNos.html">Sobre Nós</a></li>
+                    <li><a href="faleConosco.html">Fale Conosco</a></li>
+                    <li><a href="loginEmpresa.html">Administrador</a></li>
+                    <li><a href="./helpdesk.html">Suporte</a></li>
+                </ul>
+                <img src="./assets/img/login_icon_151220.png" alt="login" class="login_icon">
+                <span class="login"><a href="./login.html">Login/</a></span>
+                <span class="login"><a href="./cadastro.html">Cadastro</a></span>
+            </div>
+        </div>
+    </div>
+
+    <!--FIm Header-->
+
+    <!-- Iniciando Banner -->
+    <div class="banner">
+        <h1>HelpDesk</h1>
+    </div>
+
+    <div class="cards-problema">
+        <div class="titulo">
+            <h2>Como podemos ajudar?</h2>
+        </div>
+        <div class="container">
+            <div class="card">
+                <img class="icon-helpdesk" src="./assets/img/icons8-contrato-50.png" alt="icon de contrato">
+                <div class="card-text">
+                    <h2>Contrato...</h2>
+                    <button class="button-problem" onclick="helpdeskContrato1()">Renovação do contrato</button>
+                    <button class="button-problem" onclick="helpdeskContrato2()">Preciso de uma segunda via</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <img class="icon-helpdesk" src="./assets/img/icons8-notebook-50.png" alt="icon da plataforma">
+                <div class="card-text">
+                    <h2>Plataforma...</h2>
+                    <button class="button-problem" onclick="helpdeskPlataforma1()">Erro no login/cadastro</button>
+                    <button class="button-problem" onclick="helpdeskPlataforma2()">Problema nos gráficos</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <img class="icon-helpdesk" src="./assets/img/icons8-manutenção.png" alt="icon de manutenção">
+                <div class="card-text">
+                    <h2>Manutenção...</h2>
+                    <button class="button-problem" onclick="helpdeskManutencao1()">Novos sensores</button>
+                    <button class="button-problem" onclick="helpdeskManutencao2()">Manutenção de sensores (troca)</button>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="msg-problema" id="msg_problema">
+
+            <!-- Dentro dessa div vai aparecer o texto solucionando o problema -->
+
+        </div>
+    </div>
+
+    <div class="banner-also">
+        <div class="header-banner">
+            <h1>Para mais dúvidas, contate-nos!</h1>
+            <p>Acesse aqui outras formas de contato para suporte</p>
+        </div>
+        <div class="banner-socials">
+            <div class="flip-card">
+                <div class="flip-card-inner">
+                  <div class="flip-card-front">
+                    <img src="assets/img/icons8-whatsapp-96.png" alt="Avatar" >
+                  </div>
+                  <div class="flip-card-back">
+                    <h1>Whatsapp</h1> 
+                    <p>(11) 91234-5678</p> 
+                  </div>
+                </div>
+            </div>
+            <div class="flip-card">
+                <div class="flip-card-inner">
+                  <div class="flip-card-front">
+                    <img src="assets/img/icons8-telefone-96.png" alt="Avatar" >
+                  </div>
+                  <div class="flip-card-back">
+                    <h1>Telefone</h1> 
+                    <p>(11) 21234-5678</p> 
+                  </div>
+                </div>
+            </div>
+            <div class="flip-card">
+                <div class="flip-card-inner">
+                  <div class="flip-card-front">
+                    <img src="assets/img/icons8-mensagem-96.png" alt="Avatar" >
+                  </div>
+                  <div class="flip-card-back">
+                    <h1>Email</h1> 
+                    <p>secure_ship@outlook.com</p> 
+                  </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="msg-problema" id="msg-associados">
+            <div class="msg-left">
+                <h1>Já é associado? </h1>
+                Abra um chamado através da nossa plataforma de HelpDesk
+            </div>
+            <div class="btn-right">
+                <a href="http://secureship-support.freshdesk.com"><button>Acesse Aqui</button></a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Iniciando footer -->
+    <div class="footer">
+        <div class="footer-content">
+            <div class="footer-left">
+                <a href="./index.html"><img src="./assets/img/logo (3).png" alt="logo" width="180px" height="160px"></a>
+                <div class="icons-footer">
+                    <a href=""><i class="fa fa-twitter-square"></i></a>
+                    <a href=""><i class="fa fa-facebook-square"></i></a>
+                    <a href=""><i class="fa fa-instagram"></i></a>
+                    <a href=""><i class="fa fa-linkedin"></i></a>
+                </div>
+            </div>
+            <div class="footer-right">
+                <div class="footer-right-content">
+                    <div class="compania">
+                        <h1>Compania</h1>
+                        <a href="sobreNos.html">Sobre Nós</a>
+                        <a href="faleConosco.html">Fale Conosco</a>
+                    </div>
+                    <div class="usuario">
+                        <h1>Usuário</h1>
+                        <a href="login.html">Login</a>
+                        <a href="cadastro.html">Cadastro</a>
+                    </div>
+                    <div class="calculadora">
+                        <h1>Calculadora Financeira</h1>
+                        <a href="simulador.html">Calculadora</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
+
+<script>
+    function helpdeskContrato1() {
+        msg_problema.innerHTML=`<div class="titulo-problema">
+                                    <img src="./assets/img/icons8-contrato-50.png" alt="">
+                                    <h1>Renovação do contrato</h1>
+                                </div>
+                                <div class="texto-problema">
+                                    <p>Normalmente, enviamos um aviso prévio por e-mail ou correspondência física para informar sobre a proximidade da data de vencimento do contrato. Isso permite que você tenha tempo suficiente para considerar as opções de renovação e entrar em contato conosco caso tenha dúvidas ou precise de esclarecimentos. Durante as conversas com nossa equipe de vendas, você será informado sobre as diferentes opções de renovação disponíveis.</p>
+                                </div>`;
+    }
+
+    function helpdeskContrato2() {
+        msg_problema.innerHTML=`<div class="titulo-problema">
+                                    <img src="./assets/img/icons8-contrato-50.png" alt="">
+                                    <h1>Preciso de uma segunda via</h1>
+                                </div>
+                                <div class="texto-problema">
+                                    <p>Caso você tenha perdido, extraviado ou necessite de uma cópia adicional do seu contrato, você pode solicitar uma segunda via entrando em contato com nossa equipe de atendimento ao cliente. Explique a situação e forneça as informações relevantes, como o nome completo do contrato, número do contrato (se aplicável) e qualquer informação adicional que possa ser útil para localizar seus dados.</p>
+                                </div>`;
+    }
+
+        function helpdeskPlataforma1() {
+        msg_problema.innerHTML=`<div class="titulo-problema">
+                                    <img src="./assets/img/icons8-notebook-50.png" alt="">
+                                    <h1>Erro no login/cadastro</h1>
+                                </div>
+                                <div class="texto-problema">
+                                    <p>Se você está enfrentando dificuldades para fazer login na plataforma, há algumas etapas que você pode seguir para solucionar o problema. Primeiro, verifique se você está inserindo corretamente suas credenciais de login, incluindo seu nome de usuário e senha. Se esqueceu sua senha, você pode solicitar uma redefinição de senha seguindo as instruções fornecidas na página de login. Além disso, certifique-se de que seu navegador esteja atualizado e tente limpar o cache e os cookies para eliminar possíveis conflitos.
+
+</p>
+                                </div>`;
+    }
+    function helpdeskPlataforma2() {
+        msg_problema.innerHTML=`<div class="titulo-problema">
+                                    <img src="./assets/img/icons8-notebook-50.png" alt="">
+                                    <h1>Problema nos gráficos</h1>
+                                </div>
+                                <div class="texto-problema">
+                                    <p>Se você está com problemas na exibição dos gráficos certifique-se de que seus sensores estão captando as informações de forma correta. Caso estejam, certifique-se de que sua conexão com a internet está estável. Em casos adversos, contate nosso suporte abrindo um chamado na plataforma de Help Desk.</p>
+                                </div>`;
+    }
+    function helpdeskManutencao1() {
+        msg_problema.innerHTML=`<div class="titulo-problema">
+                                    <img src="./assets/img/icons8-manutenção.png" alt="">
+                                    <h1>Novos sensores</h1>
+                                </div>
+                                <div class="texto-problema">
+                                    <p>Para adquirir novos sensores, entre em contato com o nosso suporte para avaliações de ambiente e negociações de contrato.</p>
+                                </div>`;
+    }
+    function helpdeskManutencao2() {
+        msg_problema.innerHTML=`<div class="titulo-problema">
+                                    <img src="./assets/img/icons8-manutenção.png" alt="">
+                                    <h1>Manutenção de sensores (troca)</h1>
+                                </div>
+                                <div class="texto-problema">
+                                    <p>Para a troca dos sensores, a garantia será revisada e em caso de ainda estar no período, a troca será gratuita. Em caso de danificações, a troca será avaliada por nossos técnicos e o valor será negociado.</p>
+                                </div>`;
+    }
+</script>

@@ -1,0 +1,604 @@
+<!doctype html>
+
+<head>
+    <title>Containers | Dashboard</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="shortcut icon" href="imgs/favicon.ico" type="image/x-icon">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+    <script src="http://www.chartjs.org/dist/2.7.1/Chart.js"></script>
+    <script src="../js/funcoes.js"></script>
+</head>
+
+<body>
+    <div class="geral">
+        <div class="side-bar">
+            <div class="container">
+                <span class="container-logo">
+                    <img src="imgs/logo (3).png" alt="Logo" class="logo" />
+                </span>
+                <span class="container-opçoes">
+                
+                    <ul class="opções_visualização">
+                    
+                        <li class="lista">
+                            <a href="index.html">
+                                <img class="icons" src="imgs/icons8-casa-16.png" alt="">
+                            
+                        </a>
+                        </li>
+                            
+                        <li class="lista">
+                            <a href="">
+                                <img class="icons" src="imgs/icons8-cardápio-16.png" alt="">
+                                
+                            </a>
+                        </li>
+                        
+                        <li class="lista">
+                            <a href="suporte.html">
+                                <img class="icons" src="imgs/icons8-configurações-16.png" alt="">
+                                
+                            </a>
+                        </li>
+                        
+                        <li class="lista permisão">
+                            <a href="permissoes.html">
+                                <img class="icons" src="imgs/icons8-desbloquear-16.png" alt="">
+                                
+                            </a>
+                        </li>
+                    
+                    </ul>
+                
+                </span>
+            </div>
+        </div>
+        <div class="dashbords" style="height: fit-content;">
+            <div class="header">
+
+                <div class="select">
+                    Dashboards/<b>Containers</b>
+                </div>
+
+                <div class="icon">
+
+                    <img id="icone_sino" src="imgs/icons8-lembrete-de-compromissos-32.png" alt="Icone de Sinalização">
+                    <img src="imgs/icons8-usuário-32 (1).png" alt=""> <p id="admin">Admin</p> 
+                                                
+                </div>
+
+            </div>
+            <div class="container">
+
+                <div class="msg_inicio">
+                    <h1 class="h1-container">Bem vindo de volta,<span id="b_usuario">usuario</span>!</h1>
+                    <p id="p-container">Resumo dos Containers</p>
+                </div>
+                
+
+                <div class="locais">
+
+                    <button class="btn-per" onclick="ir_add_local()">Adicionar Local</button>
+
+                    <select class="select_local" id="lista_locais" onchange="exibirlocal(this.value)">
+                    </select>
+                    
+                    <button class="btn-per" onclick="ir_remove_local()">Remover Local</button>
+
+                </div>
+
+                <div id="graficos">
+                </div>
+
+
+            </div>
+        </div>
+        <div id="div_aguardar" class="loading-div">
+        </div>
+    </div>
+</body>
+
+</html>
+
+<script>
+
+b_usuario.innerHTML = sessionStorage.NOME_USUARIO;
+
+let proximaAtualizacao_Umi;
+let proximaAtualizacao_Temp;
+
+window.onload = atualizarFeed_locais();
+
+function atualizarFeed_locais() {
+        aguardar();
+
+        var IDEmpresaVar = sessionStorage.FKEmpresa;
+
+        fetch("/usuarios/listar_locais", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                // crie um atributo que recebe o valor recuperado aqui
+                // Agora vá para o arquivo routes/usuario.js
+                idEmpServer: IDEmpresaVar,
+            })
+        }).then(function (resposta) {
+
+            console.log("resposta: ", resposta);
+
+            if (resposta.ok) {
+
+                if (resposta.status == 204) {
+                        var feed = document.getElementById("lista_locais");
+                        var mensagem = document.createElement("span");
+                        mensagem.innerHTML = "Nenhum Local encontrado."
+                        feed.appendChild(mensagem);
+                        throw "Nenhum Local encontrado!!";
+                    }
+
+                    resposta.json().then(function (resposta) {
+                    console.log("Dados recebidos: ", JSON.stringify(resposta));
+
+                    var feed = document.getElementById
+                    ("lista_locais");
+                    var graficos = document.getElementById("graficos");
+                    feed.innerHTML = "";
+                    graficos.innerHTML = "";    
+                    for (let contador_local = 0; contador_local < resposta.length; contador_local++) {
+                        var publicacao_local = resposta[contador_local];
+                        // criando e manipulando elementos do HTML via JavaScript
+
+                        var grafico = document.createElement("div");
+                        grafico.setAttribute("id", `grafico${publicacao_local.idLocal}`);
+                        grafico.className = "display-block";
+                        graficos.appendChild(grafico);
+
+                        var tituloGraficos = document.createElement("h3");
+                        tituloGraficos.className = "tituloGraficos";
+                        grafico.appendChild(tituloGraficos);
+
+                        var titulografico = document.createElement("span");
+                        titulografico.setAttribute("id", `tituloLocal${publicacao_local.idLocal}`);
+                        tituloGraficos.appendChild(titulografico);
+
+                        var div_graph = document.createElement("div");
+                        div_graph.className = "graph";
+                        grafico.appendChild(div_graph);
+
+                        var graf_umi = document.createElement("canvas");
+                        graf_umi.setAttribute("id", `myChartCanvas_Umi${publicacao_local.idLocal}`);
+                        div_graph.appendChild(graf_umi);
+
+                        var graf_temp = document.createElement("canvas");
+                        graf_temp.setAttribute("id", `myChartCanvas_Temp${publicacao_local.idLocal}`);
+                        div_graph.appendChild(graf_temp);
+
+                        var label_captura = document.createElement("div");
+                        label_captura.className = "label-captura";
+                        grafico.appendChild(label_captura);
+
+                        var param_captura = document.createElement("p");
+                        param_captura.setAttribute("id", `avisoCaptura${publicacao_local.idLocal}`);
+                        param_captura.setAttribute("style", `color: rgb(0, 0, 0)`);
+                        label_captura.appendChild(param_captura);
+
+                        var local = document.createElement("option");
+                        local.setAttribute("Value", publicacao_local.idLocal)
+                        local.innerHTML = publicacao_local.Nome;
+                        lista_locais.appendChild(local);    
+
+                        var idLocal = publicacao_local.idLocal;
+
+                        function obterDadosGraficos_umi() {
+                            obterDadosGrafico_Umi(idLocal);       
+                        }
+
+                        function obterDadosGraficos_Temp() {
+                            obterDadosGrafico_Temp(idLocal); 
+                        }
+                        
+                        obterDadosGraficos_Temp();
+                        obterDadosGraficos_umi();
+
+                    }
+
+                    finalizarAguardar();
+                });
+
+            } else {
+                throw ("Houve um erro ao tentar realizar A pesquisa!");
+            }
+        }).catch(function (resposta) {
+            console.log(`#ERRO: ${resposta}`);
+            finalizarAguardar();
+        });
+
+        return false;
+    }
+
+validarSessao();
+
+function alterarTitulo(idLocal) {
+    var tituloLocal = document.getElementById(`tituloLocal${idLocal}`)
+    tituloLocal.innerHTML = "Últimas medidas de Temperatura e Umidade do <span style='color: #009EA3'>Local Numero: " + idLocal + "</span>"
+}
+
+function exibirlocal(idLocal) {
+    let todosOsGraficos = document.getElementById("graficos")
+
+    for (i = 1; i <= todosOsGraficos.childElementCount; i++) {
+        // exibindo - ou não - o gráfico
+        let elementoAtual = document.getElementById(`grafico${i}`)
+        if (elementoAtual.classList.contains("display-block")) {
+            elementoAtual.classList.remove("display-block")
+        }
+        elementoAtual.classList.add("display-none")
+        
+        // alterando estilo do botão
+        // let btnAtual = document.getElementById(`btnLocal${i}`)
+        // if (btnAtual.classList.contains("btn-blue")) {
+        //     btnAtual.classList.remove("btn-blue")
+        // }
+        // btnAtual.classList.add("btn-white")
+    }
+    
+    // exibindo - ou não - o gráfico
+    let graficoExibir = document.getElementById(`grafico${idLocal}`)
+    graficoExibir.classList.remove("display-none")
+    graficoExibir.classList.add("display-block")
+    
+    // alterando estilo do botão
+    // let btnExibir = document.getElementById(`btnLocal${idLocal}`)
+    // btnExibir.classList.remove("btn-white")
+    // btnExibir.classList.add("btn-blue")
+}
+
+// O gráfico é construído com três funções:
+// 1. obterDadosGrafico -> Traz dados do Banco de Dados para montar o gráfico da primeira vez
+// 2. plotarGrafico -> Monta o gráfico com os dados trazidos e exibe em tela
+// 3. atualizarGrafico -> Atualiza o gráfico, trazendo novamente dados do Banco
+
+// Esta função *obterDadosGrafico* busca os últimos dados inseridos em tabela de medidas.
+// para, quando carregar o gráfico da primeira vez, já trazer com vários dados.
+// A função *obterDadosGrafico* também invoca a função *plotarGrafico*
+
+//     Se quiser alterar a busca, ajuste as regras de negócio em src/controllers
+//     Para ajustar o "select", ajuste o comando sql em src/models
+function obterDadosGrafico_Umi(idLocal) {
+
+    alterarTitulo(idLocal);
+
+    if (proximaAtualizacao_Umi != undefined) {
+        clearTimeout(proximaAtualizacao_Umi);
+    }
+
+    fetch(`/medidas/ultimas_Umi/${idLocal}`, { cache: 'no-store' }).then(function (response) {
+        if (response.ok) {
+            response.json().then(function (resposta) {
+                console.log(`Dados recebidos: ${JSON.stringify(resposta)}`);
+                resposta.reverse();
+
+                plotarGrafico_Umi(resposta, idLocal);
+            });
+        } else {
+            console.error('Nenhum dado encontrado ou erro na API');
+        }
+    })
+        .catch(function (error) {
+            console.error(`Erro na obtenção dos dados p/ gráfico: ${error.message}`);
+        });
+}
+
+// Esta função *plotarGrafico* usa os dados capturados na função anterior para criar o gráfico
+// Configura o gráfico (cores, tipo, etc), materializa-o na página e, 
+// A função *plotarGrafico* também invoca a função *atualizarGrafico*
+function plotarGrafico_Umi(resposta, idLocal) {
+
+    console.log('iniciando plotagem do gráfico...');
+
+    // Criando estrutura para plotar gráfico - labels
+    let labels = [];
+
+    // Criando estrutura para plotar gráfico - dados
+    let dados = {
+        labels: labels,
+        datasets: [{
+            label: 'Umidade',
+            data: [],
+            fill: false,
+            borderColor: '#009EA3',
+            backgroundColor: '#009EA3'
+        }
+        // {
+        //     label: 'temperatura',
+        //     data: [],
+        //     fill: false,
+        //     borderColor: 'rgb(0, 255, 0)',
+        //     backgroundColor: 'rgb(0, 255, 0)'
+        // }
+    ]
+    };
+
+    console.log('----------------------------------------------')
+    console.log('Estes dados foram recebidos pela funcao "obterDadosGrafico" e passados para "plotarGrafico":')
+    console.log(resposta)
+
+    // Inserindo valores recebidos em estrutura para plotar o gráfico
+    for (i = 0; i < resposta.length; i++) {
+        var registro = resposta[i];
+        labels.push(registro.momento_grafico);
+        dados.datasets[0].data.push(registro.umidade);
+        // dados.datasets[1].data.push(registro.temperatura);
+    }
+
+    console.log('----------------------------------------------')
+    console.log('O gráfico será plotado com os respectivos valores:')
+    console.log('Labels:')
+    console.log(labels)
+    console.log('Dados:')
+    console.log(dados.datasets)
+    console.log('----------------------------------------------')
+
+    // Criando estrutura para plotar gráfico - config
+    const config = {
+        type: 'bar',
+        data: dados,
+        options: {
+                    scales: {
+                        xAxes: [{
+                            distribution: 'series',
+                            ticks: {
+                                beginAtZero: true
+                            }
+                        }],
+                        yAxes: [{
+                            scaleLabel: {
+                                display: true,
+                            },
+                            ticks: {
+                                beginAtZero: true
+                            }
+                        }]
+                    },
+                    animation: {
+                        duration: 0
+                    }
+                }
+    };
+
+    // Adicionando gráfico criado em div na tela
+    let myChart_Umi = new Chart(
+        document.getElementById(`myChartCanvas_Umi${idLocal}`),
+        config
+    );
+
+    setTimeout(() => atualizarGrafico_Umi(idLocal, dados, myChart_Umi), 3000);
+
+}
+
+
+// Esta função *atualizarGrafico* atualiza o gráfico que foi renderizado na página,
+// buscando a última medida inserida em tabela contendo as capturas, 
+
+//     Se quiser alterar a busca, ajuste as regras de negócio em src/controllers
+//     Para ajustar o "select", ajuste o comando sql em src/models
+function atualizarGrafico_Umi(idLocal, dados, myChart_Umi) {
+
+    fetch(`/medidas/tempo-real_Umi/${idLocal}`, { cache: 'no-store' }).then(function (response) {
+        if (response.ok) {
+            response.json().then(function (novoRegistro) {
+
+                console.log(`Dados recebidos: ${JSON.stringify(novoRegistro)}`);
+                console.log(`Dados atuais do gráfico:`);
+                console.log(dados);
+
+                let avisoCaptura = document.getElementById(`avisoCaptura${idLocal}`)
+                avisoCaptura.innerHTML = ""
+
+                if (novoRegistro[0].momento_grafico == dados.labels[dados.labels.length - 1]) {
+                    console.log("---------------------------------------------------------------")
+                    console.log("Como não há dados novos para captura, o gráfico não atualizará.")
+                    avisoCaptura.innerHTML = "<i class='fa-solid fa-triangle-exclamation'></i> Foi trazido o dado mais atual capturado pelo sensor. <br> Como não há dados novos a exibir, o gráfico não atualizará."
+                    console.log("Horário do novo dado capturado:")
+                    console.log(novoRegistro[0].momento_grafico)
+                    console.log("Horário do último dado capturado:")
+                    console.log(dados.labels[dados.labels.length - 1])
+                    console.log("---------------------------------------------------------------")
+                } else {
+                    // tirando e colocando valores no gráfico
+                    dados.labels.shift(); // apagar o primeiro
+                    dados.labels.push(novoRegistro[0].momento_grafico); // incluir um novo momento
+
+                    dados.datasets[0].data.shift();  // apagar o primeiro de umidade
+                    dados.datasets[0].data.push(novoRegistro[0].umidade); // incluir uma nova medida de umidade
+
+                    // dados.datasets[1].data.shift();  // apagar o primeiro de temperatura
+                    // dados.datasets[1].data.push(novoRegistro[0].temperatura); // incluir uma nova medida de temperatura
+
+                    myChart_Umi.update();
+                }
+
+                // Altere aqui o valor em ms se quiser que o gráfico atualize mais rápido ou mais devagar
+                proximaAtualizacao_Umi = setTimeout(() => atualizarGrafico_Umi(idLocal, dados, myChart_Umi), 3000);
+            });
+        } else {
+            console.error('Nenhum dado encontrado ou erro na API');
+            // Altere aqui o valor em ms se quiser que o gráfico atualize mais rápido ou mais devagar
+            proximaAtualizacao_Umi = setTimeout(() => atualizarGrafico_Umi(idLocal, dados, myChart_Umi), 3000);
+        }
+    })
+        .catch(function (error) {
+            console.error(`Erro na obtenção dos dados p/ gráfico: ${error.message}`);
+        });
+
+}
+
+function obterDadosGrafico_Temp(idLocal) {
+
+alterarTitulo(idLocal);
+
+if (proximaAtualizacao_Temp != undefined) {
+    clearTimeout(proximaAtualizacao_Temp);
+}
+
+fetch(`/medidas/ultimas_Temp/${idLocal}`, { cache: 'no-store' }).then(function (response) {
+    if (response.ok) {
+        response.json().then(function (resposta) {
+            console.log(`Dados recebidos: ${JSON.stringify(resposta)}`);
+            resposta.reverse();
+
+            plotarGrafico_Temp(resposta, idLocal);
+        });
+    } else {
+        console.error('Nenhum dado encontrado ou erro na API');
+    }
+})
+    .catch(function (error) {
+        console.error(`Erro na obtenção dos dados p/ gráfico: ${error.message}`);
+    });
+}
+
+// Esta função *plotarGrafico* usa os dados capturados na função anterior para criar o gráfico
+// Configura o gráfico (cores, tipo, etc), materializa-o na página e, 
+// A função *plotarGrafico* também invoca a função *atualizarGrafico*
+function plotarGrafico_Temp(resposta, idLocal) {
+
+console.log('iniciando plotagem do gráfico...');
+
+// Criando estrutura para plotar gráfico - labels
+let labels = [];
+
+// Criando estrutura para plotar gráfico - dados
+let dados = {
+    labels: labels,
+    datasets: [
+    {
+        label: 'temperatura',
+        data: [],
+        fill: false,
+        borderColor: 'rgb(0, 255, 0)',
+        backgroundColor: 'rgb(0, 255, 0)'
+    }
+]
+};
+
+console.log('----------------------------------------------')
+console.log('Estes dados foram recebidos pela funcao "obterDadosGrafico" e passados para "plotarGrafico":')
+console.log(resposta)
+
+// Inserindo valores recebidos em estrutura para plotar o gráfico
+for (i = 0; i < resposta.length; i++) {
+    var registro = resposta[i];
+    dados.datasets[0].data.push(registro.temperatura);
+    labels.push(registro.momento_grafico);
+}
+
+console.log('----------------------------------------------')
+console.log('O gráfico será plotado com os respectivos valores:')
+console.log('Labels:')
+console.log(labels)
+console.log('Dados:')
+console.log(dados.datasets)
+console.log('----------------------------------------------')
+
+// Criando estrutura para plotar gráfico - config
+const config = {
+    type: 'bar',
+    data: dados,
+    options: {
+        scales: {
+            xAxes: [{
+                ticks: {
+                    beginAtZero: true
+                }
+            }],
+            yAxes: [{
+                ticks: {
+                    beginAtZero: true
+                }
+            }]
+        },
+        animation: {
+            duration: 0
+        },
+    }
+};
+
+// Adicionando gráfico criado em div na tela
+let myChart_Temp = new Chart(
+    document.getElementById(`myChartCanvas_Temp${idLocal}`),
+    config
+);
+
+setTimeout(() => atualizarGrafico_Umi(idLocal, dados, myChart_Temp), 3000);
+}
+
+
+// Esta função *atualizarGrafico* atualiza o gráfico que foi renderizado na página,
+// buscando a última medida inserida em tabela contendo as capturas, 
+
+//     Se quiser alterar a busca, ajuste as regras de negócio em src/controllers
+//     Para ajustar o "select", ajuste o comando sql em src/models
+function atualizarGrafico_Temp(idLocal, dados, myChart_Temp) {
+
+fetch(`/medidas/tempo-real_Temp/${idLocal}`, { cache: 'no-store' }).then(function (response) {
+    if (response.ok) {
+        response.json().then(function (novoRegistro) {
+
+            console.log(`Dados recebidos: ${JSON.stringify(novoRegistro)}`);
+            console.log(`Dados atuais do gráfico:`);
+            console.log(dados);
+
+            let avisoCaptura = document.getElementById(`avisoCaptura${idLocal}`)
+            avisoCaptura.innerHTML = ""
+
+
+            if (novoRegistro[0].momento_grafico == dados.labels[dados.labels.length - 1]) {
+                console.log("---------------------------------------------------------------")
+                console.log("Como não há dados novos para captura, o gráfico não atualizará.")
+                avisoCaptura.innerHTML = "<i class='fa-solid fa-triangle-exclamation'></i> Foi trazido o dado mais atual capturado pelo sensor. <br> Como não há dados novos a exibir, o gráfico não atualizará."
+                console.log("Horário do novo dado capturado:")
+                console.log(novoRegistro[0].momento_grafico)
+                console.log("Horário do último dado capturado:")
+                console.log(dados.labels[dados.labels.length - 1])
+                console.log("---------------------------------------------------------------")
+            } else {
+                // tirando e colocando valores no gráfico
+                dados.labels.shift(); // apagar o primeiro
+                dados.labels.push(novoRegistro[0].momento_grafico); // incluir um novo momento
+
+                // dados.datasets[0].data.shift();  // apagar o primeiro de umidade
+                // dados.datasets[0].data.push(novoRegistro[0].umidade); // incluir uma nova medida de umidade
+
+                dados.datasets[0].data.shift();  // apagar o primeiro de temperatura
+                dados.datasets[0].data.push(novoRegistro[0].temperatura); // incluir uma nova medida de temperatura
+
+                myChart_Temp.update();
+            }
+
+            // Altere aqui o valor em ms se quiser que o gráfico atualize mais rápido ou mais devagar
+            proximaAtualizacao_Temp = setTimeout(() => atualizarGrafico_Temp(idLocal, dados, myChart_Temp), 3000);
+        });
+    } else {
+        console.error('Nenhum dado encontrado ou erro na API');
+        // Altere aqui o valor em ms se quiser que o gráfico atualize mais rápido ou mais devagar
+        proximaAtualizacao_Temp = setTimeout(() => atualizarGrafico_Temp(idLocal, dados, myChart_Temp), 3000);
+    }
+})
+    .catch(function (error) {
+        console.error(`Erro na obtenção dos dados p/ gráfico: ${error.message}`);
+    });
+
+}
+
+ function ir_add_local() {
+    window.location = 'cadastro_local.html';
+}
+
+function ir_remove_local() {
+    window.location = 'deletar_local.html';
+}
+
+</script>

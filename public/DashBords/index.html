@@ -1,0 +1,256 @@
+<!doctype html>
+<html>
+
+<head>
+    <title>Home | Dashboard</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="shortcut icon" href="imgs/favicon.ico" type="image/x-icon">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+    <script src="http://www.chartjs.org/dist/2.7.1/Chart.js"></script>
+    <!-- <script src="http://www.chartjs.org/samples/latest/utils.js"></script> -->
+    <script src="../js/funcoes.js"></script>
+    <script src="alerta.js"></script>
+</head>
+
+<body>
+
+    <div class="geral">
+                
+        <div class="side-bar">
+
+            <div class="container">
+
+                <span class="container-logo">
+                    
+                    <img src="imgs/logo (3).png" alt="Logo" class="logo" />
+                
+                </span>
+            
+                <span class="container-opçoes">
+                
+                    <ul class="opções_visualização">
+                    
+                        <li class="lista">
+                            <a href="index.html">
+                                <img class="icons" src="imgs/icons8-casa-16.png" alt="">
+                            </a>
+                        </li>
+                            
+                        <li class="lista">
+                            <a href="containers.html">
+                                <img class="icons" src="imgs/icons8-cardápio-16.png" alt="">  
+                            </a>
+                        </li>
+                        
+                        <li class="lista">
+                            <a href="suporte.html">
+                                <img class="icons" src="imgs/icons8-configurações-16.png" alt="">
+                            </a>
+                        </li>
+                        
+                        <li class="lista permisão">
+                            <a href="permissoes.html">
+                                <img class="icons" src="imgs/icons8-desbloquear-16.png" alt="">
+                            </a>
+                        </li>
+
+                        <li class="lista">
+                            <a onclick="deslogar()" href="../index.html">
+                                <img class="icons" src="./imgs/icons8-sair.png" alt="">
+                            </a>
+                        </li>
+                    
+                    </ul>
+                
+                </span>
+            
+            </div>
+        
+        </div>
+
+        <div class="dashbords">
+            
+            <div class="header">
+
+                <div class="select">
+                    Home/<b>Dashboards</b>
+                </div>
+
+                <div class="icon">
+                    <img id="icone_sino" src="imgs/icons8-lembrete-de-compromissos-32.png" alt="Icone de Sinalização">
+                    <img src="imgs/icons8-usuário-32 (1).png" alt=""> <p id="admin">Admin</p>                                
+                </div>
+
+            </div>
+
+            <div class="container">
+                <h1 class="h1-container">Bem vindo de volta,<span id="b_usuario">usuario</span>!</h1>
+                <p id="p-container">Resumo Geral</p>
+    
+                <div class="dash">
+                    <div id="alerta_Umi" class="alerta">
+                    </div>
+                    <div id="alerta_Temp" class="alerta">
+                    </div>
+                    <div class="regua">
+                        <div class="item-regua perigo-frio">
+                            <h4>Perigo</h4>
+                            <h2>&lt;0°C</h2>
+                        </div>
+                        <div class="item-regua alerta-frio">
+                            <h4>Alerta</h4>
+                            <h2>&lt;=10°C</h2>
+                        </div>
+                        <div class="item-regua ideal">
+                            <h4>Ideal</h4>
+                            <h2>20°C</h2>
+                        </div>
+                        <div class="item-regua alerta-quente">
+                            <h4>Alerta</h4>
+                            <h2>&gt;25°C</h2>
+                        </div>
+                        <div class="item-regua perigo-quente">
+                            <h4>Perigo</h4>
+                            <h2>&gt;30°C</h2>
+                        </div>
+                    </div>
+        
+                    <div class="cards" id="cards">
+                    </div>
+        
+                </div>
+                <div id="div_aguardar" class="loading-div">
+                </div>
+            </div>
+        
+        </div>
+    
+    </div>
+
+    <div>
+        
+    </div>
+</body>
+
+</html>
+
+<script>
+
+    b_usuario.innerHTML = sessionStorage.NOME_USUARIO;  
+
+    window.onload = atualizarFeed_Cards();
+    window.onload = validarSessao();
+    window.onload = verificar_admin();
+
+    function atualizarFeed_Cards() {
+        aguardar();
+
+        var IDEmpresaVar = sessionStorage.FKEmpresa;
+
+        fetch("/usuarios/listar_locais", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                // crie um atributo que recebe o valor recuperado aqui
+                // Agora vá para o arquivo routes/usuario.js
+                idEmpServer: IDEmpresaVar,
+            })
+        }).then(function (resposta) {
+
+            console.log("resposta: ", resposta);
+
+            if (resposta.ok) {
+
+                if (resposta.status == 204) {
+                        var feed = document.getElementById("cards");
+                        var mensagem = document.createElement("span");
+                        mensagem.innerHTML = "Nenhum Local encontrado.";
+                        feed.appendChild(mensagem);
+                        throw "Nenhum Local encontrado!!";
+                    }
+
+                    resposta.json().then(function (resposta) {
+                    console.log("Dados recebidos: ", JSON.stringify(resposta));
+
+                    var feed = document.getElementById("cards");
+                    feed.innerHTML = "";    
+                    for (let contador_local = 0; contador_local < resposta.length; contador_local++) {
+                        var publicacao_local = resposta[contador_local];
+                        // criando e manipulando elementos do HTML via JavaScript
+
+                        // Crad Temp 
+
+                        var card_temp = document.createElement("div");
+                        card_temp.className = "card";
+                        feed.appendChild(card_temp);
+
+                        var titulo = document.createElement("h1");
+                        titulo.innerHTML = `Local ${publicacao_local.Nome}: Temperatura`;
+                        card_temp.appendChild(titulo);
+
+                        var temperatura = document.createElement("div");
+                        temperatura.className = "temperatura";
+                        card_temp.appendChild(temperatura);
+
+                        var temp = document.createElement("p");
+                        temp.setAttribute("id", `temp_local_${publicacao_local.idLocal}`);
+                        temp.innerHTML = `-C°`;
+                        temperatura.appendChild(temp);
+
+                        var cor = document.createElement("div");
+                        cor.className = "cor-alerta";
+                        cor.setAttribute("id", `card_temp_${publicacao_local.idLocal}`);
+                        card_temp.appendChild(cor);
+
+                        //Card Umi
+
+                        var card_umi = document.createElement("div");
+                        card_umi.className = "card";
+                        feed.appendChild(card_umi);
+
+                        var titulo = document.createElement("h1");
+                        titulo.innerHTML = `Local ${publicacao_local.Nome}: Umidade`;
+                        card_umi.appendChild(titulo);
+
+                        var umidade = document.createElement("div");
+                        umidade.className = "temperatura";
+                        card_umi.appendChild(umidade);
+
+                        var Umi = document.createElement("p");
+                        Umi.setAttribute("id", `Umi_local_${publicacao_local.idLocal}`);
+                        Umi.innerHTML = `-C°`;
+                        umidade.appendChild(Umi);
+
+                        var cor = document.createElement("div");
+                        cor.className = "cor-alerta";
+                        cor.setAttribute("id", `card_umi_${publicacao_local.idLocal}`);
+                        card_umi.appendChild(cor);
+
+                        function atualizacaoPeriodica() {
+                            obterdados_Temp(publicacao_local.idLocal);
+                            obterdados_Umi(publicacao_local.idLocal);
+                            setTimeout(atualizacaoPeriodica, 5000);
+                        }   
+
+                        atualizacaoPeriodica();
+
+                    }
+
+                    finalizarAguardar();
+                });
+
+            } else {
+                throw ("Houve um erro ao tentar realizar A pesquisa!");
+            }
+        }).catch(function (resposta) {
+            console.log(`#ERRO: ${resposta}`);
+            finalizarAguardar();
+        });
+
+        return false;
+    }
+    
+
+    </script>
